@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeoVortex Combo Hub</title>
+  <style>
+    :root {
+      --sand-0: #f6edd1;
+      --sand-1: #e7d09d;
+      --sand-2: #cfad6e;
+      --sand-3: #8f6330;
+      --sand-4: #5f3b1f;
+      --ink: #2d1c10;
+      --ocean: #1f5c6d;
+      --ocean-deep: #0d3444;
+      --gold: #c89232;
+      --gold-soft: rgba(200, 146, 50, 0.2);
+      --panel: rgba(247, 234, 196, 0.84);
+      --panel-strong: rgba(250, 241, 214, 0.92);
+      --shadow: 0 18px 50px rgba(53, 30, 10, 0.18);
+      --border: rgba(88, 53, 26, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top, rgba(255, 246, 220, 0.65), transparent 34%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(126, 77, 28, 0.14)),
+        url("./assets/treasure-map.svg") center/cover fixed no-repeat,
+        linear-gradient(180deg, #dfc48a, #b98549);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.18), transparent 12%, transparent 88%, rgba(53,30,10,0.24)),
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.15), transparent 16%),
+        radial-gradient(circle at 80% 18%, rgba(13, 52, 68, 0.12), transparent 20%);
+      mix-blend-mode: soft-light;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.35rem 0 2.25rem;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 1.55rem 1.45rem 1.35rem;
+      border: 2px solid var(--border);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.26), transparent 38%),
+        linear-gradient(140deg, rgba(255, 248, 224, 0.95), rgba(228, 198, 135, 0.82)),
+        url("./assets/compass.svg") right -3rem top -2rem / 230px no-repeat;
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.18), transparent 58%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .hero-title-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      min-width: 0;
+    }
+
+    .crest {
+      width: 114px;
+      max-width: 22vw;
+      flex: 0 0 auto;
+      filter: drop-shadow(0 8px 14px rgba(53, 30, 10, 0.14));
+      opacity: 0.98;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 0.5rem;
+      padding: 0.26rem 0.62rem;
+      border-radius: 999px;
+      letter-spacing: 0.14em;
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--panel-strong);
+      background: rgba(45, 28, 16, 0.86);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: none;
+      font-size: clamp(2.1rem, 5vw, 3.8rem);
+      line-height: 0.94;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-shadow: none;
+    }
+
+    .hero-wordmark {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.1rem;
+    }
+
+    .hero-wordmark-main {
+      display: block;
+      font-weight: 900;
+      color: #143f50;
+      letter-spacing: 0.08em;
+      text-shadow:
+        0 1px 0 rgba(255, 247, 223, 0.72),
+        0 4px 12px rgba(53, 30, 10, 0.12);
+    }
+
+    .hero-wordmark-sub {
+      display: block;
+      font-size: 0.52em;
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      color: #9a5f19;
+      text-shadow:
+        0 1px 0 rgba(255, 247, 223, 0.72),
+        0 4px 12px rgba(53, 30, 10, 0.12);
+    }
+
+    .hero-kicker {
+      margin: 0.15rem 0 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(13, 52, 68, 0.84);
+    }
+
+    .hero p {
+      max-width: 72ch;
+      margin: 0.3rem 0 0;
+      font-size: 0.98rem;
+      line-height: 1.58;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.8rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      min-height: 2.8rem;
+      padding: 0.72rem 1.05rem;
+      border: 0;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(45, 28, 16, 0.22);
+    }
+
+    .btn-primary {
+      color: #fff7e7;
+      background: linear-gradient(180deg, #0f4e62, #173947);
+    }
+
+    .btn-secondary {
+      color: var(--ink);
+      background: rgba(255, 248, 227, 0.75);
+      border: 1px solid rgba(95, 59, 31, 0.18);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel::before,
+    .panel::after {
+      content: "";
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      background: url("./assets/rope-corner.svg") center/contain no-repeat;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .panel::before {
+      top: 10px;
+      left: 10px;
+    }
+
+    .panel::after {
+      right: 10px;
+      bottom: 10px;
+      transform: rotate(180deg);
+    }
+
+    .panel-header {
+      padding: 1rem 1rem 0.85rem;
+      border-bottom: 1px solid rgba(95, 59, 31, 0.12);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.45rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .panel-subtitle {
+      margin: 0.3rem 0 0;
+      color: rgba(45, 28, 16, 0.72);
+      line-height: 1.45;
+      font-size: 0.96rem;
+    }
+
+    .filter-wrap {
+      position: sticky;
+      top: 1rem;
+      z-index: 2;
+      padding: 0.85rem 1rem 0;
+      background: linear-gradient(180deg, rgba(247, 234, 196, 0.98), rgba(247, 234, 196, 0.88));
+    }
+
+    .filter {
+      width: 100%;
+      padding: 0.82rem 1rem;
+      border: 1px solid rgba(95, 59, 31, 0.18);
+      border-radius: 16px;
+      color: var(--ink);
+      font: inherit;
+      font-size: 1rem;
+      background: rgba(255, 251, 237, 0.82);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.5);
+    }
+
+    .filter:focus {
+      outline: 2px solid rgba(15, 78, 98, 0.3);
+      outline-offset: 2px;
+    }
+
+    .filter-icon {
+      position: relative;
+    }
+
+    .filter-icon img {
+      position: absolute;
+      top: 50%;
+      left: 1rem;
+      width: 18px;
+      height: 18px;
+      transform: translateY(-50%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .filter-icon .filter {
+      padding-left: 2.7rem;
+    }
+
+    .combo-list {
+      display: grid;
+      gap: 0.6rem;
+      padding: 0.85rem 1rem 1rem;
+    }
+
+    .combo-item {
+      position: relative;
+      display: block;
+      padding: 0.72rem 2.8rem 0.72rem 0.9rem;
+      border: 1px solid rgba(95, 59, 31, 0.18);
+      border-radius: 18px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.32), transparent),
+        linear-gradient(180deg, rgba(255, 247, 224, 0.76), rgba(227, 199, 140, 0.82));
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .combo-item:hover,
+    .combo-item:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(15, 78, 98, 0.35);
+      box-shadow: 0 18px 28px rgba(53, 30, 10, 0.15);
+      outline: none;
+    }
+
+    .combo-item::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 0.9rem;
+      width: 24px;
+      height: 24px;
+      transform: translateY(-50%);
+      background: url("./assets/crossed-swords.svg") center/contain no-repeat;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    .combo-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+    }
+
+    .combo-name {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.28rem 0.52rem;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #fff6da;
+      background: rgba(45, 28, 16, 0.86);
+      white-space: nowrap;
+    }
+
+    .title-icon {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+      opacity: 0.9;
+    }
+
+    .inline-icon {
+      width: 1.1rem;
+      height: 1.1rem;
+      flex: 0 0 auto;
+    }
+
+    .combo-preview {
+      margin: 0;
+      color: rgba(45, 28, 16, 0.8);
+      line-height: 1.5;
+    }
+
+    .stats {
+      display: grid;
+      gap: 0.8rem;
+      padding: 1rem;
+    }
+
+    .stats-card {
+      padding: 0.95rem;
+      border-radius: 18px;
+      border: 1px solid rgba(95, 59, 31, 0.18);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.3), transparent),
+        rgba(255, 248, 227, 0.74);
+    }
+
+    .stats-card h3,
+    .stats-card p {
+      margin: 0;
+    }
+
+    .stats-card h3 {
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(45, 28, 16, 0.7);
+    }
+
+    .stats-card p {
+      margin-top: 0.42rem;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+
+    .stat-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.15rem;
+      height: 2.15rem;
+      margin-bottom: 0.48rem;
+      border-radius: 50%;
+      background: rgba(45, 28, 16, 0.08);
+    }
+
+    .stat-icon img {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+
+    .count {
+      font-size: clamp(3rem, 8vw, 5rem);
+      line-height: 1;
+      color: var(--ocean-deep);
+    }
+
+    .empty-state {
+      display: none;
+      margin: 0;
+      padding: 0 1rem 1rem;
+      color: rgba(45, 28, 16, 0.74);
+    }
+
+    dialog {
+      width: min(720px, calc(100% - 1.5rem));
+      padding: 0;
+      border: 0;
+      border-radius: 28px;
+      background: transparent;
+      color: inherit;
+    }
+
+    dialog::backdrop {
+      background: rgba(26, 16, 8, 0.48);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-shell {
+      position: relative;
+      overflow: hidden;
+      border: 2px solid rgba(95, 59, 31, 0.24);
+      border-radius: 28px;
+      background:
+        linear-gradient(150deg, rgba(252, 245, 222, 0.94), rgba(226, 193, 127, 0.9)),
+        url("./assets/treasure-map.svg") center/cover no-repeat;
+      box-shadow: 0 22px 60px rgba(31, 18, 8, 0.28);
+    }
+
+    .modal-header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding: 1rem 1rem 0.8rem;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      text-transform: uppercase;
+      line-height: 1;
+      letter-spacing: 0.06em;
+    }
+
+    .close {
+      width: 2.35rem;
+      height: 2.35rem;
+      border-radius: 50%;
+      border: 1px solid rgba(95, 59, 31, 0.18);
+      background: rgba(255, 250, 235, 0.78);
+    }
+
+    .modal-body {
+      position: relative;
+      z-index: 1;
+      padding: 0 1rem 1rem;
+    }
+
+    .scroll {
+      margin-top: 0.7rem;
+      padding: 0.95rem;
+      border-radius: 18px;
+      border: 1px solid rgba(95, 59, 31, 0.18);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.38), transparent),
+        rgba(248, 236, 202, 0.9);
+    }
+
+    .steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0;
+    }
+
+    .step-chip {
+      padding: 0.42rem 0.62rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      background: rgba(45, 28, 16, 0.08);
+      border: 1px solid rgba(95, 59, 31, 0.12);
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.75rem;
+    }
+
+    .copy-note {
+      min-height: 1.15rem;
+      margin: 0.35rem 0 0;
+      font-size: 0.88rem;
+      color: rgba(45, 28, 16, 0.72);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 920px) {
+      .hero-title-row {
+        align-items: start;
+      }
+
+      .crest {
+        width: 84px;
+        max-width: none;
+      }
+
+      .board {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        background-size: 180px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero-title-row {
+        gap: 0.6rem;
+      }
+
+      .crest {
+        width: 68px;
+      }
+
+      .shell {
+        width: min(100% - 1rem, 1180px);
+        padding-top: 0.65rem;
+      }
+
+      .hero,
+      .panel,
+      .modal-shell {
+        border-radius: 22px;
+      }
+
+      .title-row {
+        align-items: start;
+      }
+
+      .hero,
+      .panel-header,
+      .stats,
+      .modal-header,
+      .modal-body {
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+      }
+
+      .filter-wrap,
+      .combo-list,
+      .empty-state {
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-title-row">
+            <img class="crest" src="./assets/straw-hats-logo.png" alt="Straw Hats logo">
+            <div>
+              <span class="eyebrow">Grand Line Combo Archive</span>
+              <h1 class="hero-wordmark">
+                <span class="hero-wordmark-main">NeoVortex</span>
+                <span class="hero-wordmark-sub">Combo Hub</span>
+              </h1>
+            </div>
+          </div>
+          <p class="hero-kicker">Treasure map routes for pirates chasing stylish kills</p>
+          <p>
+            Hunt down fruit, sword, and hybrid routes through a One Piece-inspired combo codex.
+            Use the quick filter, crack open any named entry, and copy the full sequence from the scroll.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://www.youtube.com/@NeoVortex-OG" target="_blank" rel="noreferrer">
+              <img class="inline-icon" src="./assets/play-mark.svg" alt="">
+              Subscribe to NeoVortex YouTube
+            </a>
+            <button class="btn btn-secondary" type="button" id="random-combo">
+              <img class="inline-icon" src="./assets/log-pose.svg" alt="">
+              Open Random Combo
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="board" aria-label="Combo hub">
+      <div class="panel">
+        <header class="panel-header">
+          <div class="title-row">
+            <img class="title-icon" src="./assets/crossed-swords.svg" alt="">
+            <h2 class="panel-title">Wanted Combos</h2>
+          </div>
+          <p class="panel-subtitle">Tap any entry to open its combo scroll inside a focused modal with one-click copy.</p>
+        </header>
+
+        <div class="filter-wrap">
+          <label class="sr-only" for="combo-filter">Quick filter combos</label>
+          <div class="filter-icon">
+            <img src="./assets/log-pose.svg" alt="">
+            <input class="filter" id="combo-filter" type="search" placeholder="Quick filter: search by fruit, weapon, or stat type...">
+          </div>
+        </div>
+
+        <div class="combo-list" id="combo-list"></div>
+        <p class="empty-state" id="empty-state">No combos match that search. Try a fruit name, weapon, or stat type.</p>
+      </div>
+
+      <aside class="panel">
+        <header class="panel-header">
+          <div class="title-row">
+            <img class="title-icon" src="./assets/log-pose.svg" alt="">
+            <h2 class="panel-title">Captain's Log</h2>
+          </div>
+          <p class="panel-subtitle">A quick read on what’s stocked in this desert hideout.</p>
+        </header>
+        <div class="stats">
+          <article class="stats-card">
+            <span class="stat-icon" aria-hidden="true"><img src="./assets/berry-coin.svg" alt=""></span>
+            <h3>Combos Logged</h3>
+            <p class="count" id="combo-count">0</p>
+          </article>
+          <article class="stats-card">
+            <span class="stat-icon" aria-hidden="true"><img src="./assets/crossed-swords.svg" alt=""></span>
+            <h3>Quick Filter Tips</h3>
+            <p>Try searches like <strong>Kitsune</strong>, <strong>SWORD</strong>, <strong>Godhuman</strong>, or <strong>AWK</strong> to narrow the list fast.</p>
+          </article>
+          <article class="stats-card">
+            <span class="stat-icon" aria-hidden="true"><img src="./assets/jolly-crest.svg" alt=""></span>
+            <h3>Map Notes</h3>
+            <p>The combo dialog breaks the route into easy chips, and the copy button grabs the full move string so it’s ready to paste anywhere.</p>
+          </article>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <dialog id="combo-modal" aria-labelledby="modal-title">
+    <div class="modal-shell">
+      <div class="modal-header">
+        <div class="title-row">
+          <img class="title-icon" src="./assets/straw-hats-logo.png" alt="Straw Hats logo">
+          <div>
+            <span class="badge" id="modal-type">Type</span>
+            <h2 class="modal-title" id="modal-title">Combo Name</h2>
+          </div>
+        </div>
+        <button class="btn close" type="button" id="close-modal" aria-label="Close combo dialog">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="scroll">
+          <div class="steps" id="modal-steps"></div>
+          <div class="modal-actions">
+            <button class="btn btn-primary" type="button" id="copy-combo">
+              <img class="inline-icon" src="./assets/berry-coin.svg" alt="">
+              Copy Combo
+            </button>
+          </div>
+          <p class="copy-note" id="copy-note" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    const combos = [
+      { name: "Portal", type: "Sword Stats", sequence: "Portal X - Portal Z - TTK X - Sanguine Z - TTK Z - Sanguine C - Sanguine X." },
+      { name: "Dough", type: "Fruit Stats", sequence: "Dough X - Talon X - CDK X - Dough C - CDK Z - Kabucha X - Dough Z - Dough V - Talon X - Talon Z - Dough X." },
+      { name: "Diamond", type: "Fruit Stats", sequence: "SGuiatr X - Diamond V - Diamond X - SpikeyTrident X - Diamond C - Godhuman X - Godhuman Z - Godhuman C - Diamon M1 - Diamond Z." },
+      { name: "Kitsune", type: "Fruit Stats", sequence: "Godhuman C - Yama X - Kitsune X - Kitsune C - Kitsune F - Godhuman Z - Godhuman X." },
+      { name: "Empyrean Kitsune", type: "Fruit Stats", sequence: "EKitsune C - EKitsune X - Godhuman X - Godhuman C - EKitsune F - FoxLamp X - FoxLamp Z - EKitsune Z." },
+      { name: "Buddha", type: "Sword Stats", sequence: "Buddha Z - SGuitar X - DragonTrident X - DragonTrident M1x3 - AWKBuddha V - DragonTalon C - Dragon Talon X." },
+      { name: "Dragon West", type: "Fruit Stats", sequence: "DragonW V - DragonW X - SpikeyTrident X - Godhuman X - Godhuman Z - Godhuman C - DragonW X - DragonW Z." },
+      { name: "Eagle", type: "Fruit Stats", sequence: "GravityBlade Z - Sanguine Z - Eagle C - Sanguine C - Eagle X - Eagle Z." },
+      { name: "Yeti", type: "Fruit Stats", sequence: "GravityBlade Z - Godhuman X - Godhuman Z - Godhuman C - Yeti F - Yeti C - Yeti Z." },
+      { name: "Fiend Yeti", type: "Fruit Stats", sequence: "Godhuman C - FYeti F - SpikeyTrident X - Godhuman Z - Godhuman X - FYeti Z - FYeti X." },
+      { name: "Gas", type: "Fruit Stats", sequence: "Gas Z - Gas X - Gas C - CDK Z - SharkmanKarate X - SharkmanKarate Z - CDK X - SharkmanKarate C." },
+      { name: "Bomb", type: "Fruit Stats", sequence: "Bomb Z - Bomb X - Godhuman Z - Godhuman C - SpikeyTrident X - Godhuman X - Bomb V." },
+      { name: "Ice", type: "Sword Stats", sequence: "Sguitar X - Ice V - Cyborg v3 - Ice C - PoleV2 X - PoleV2 Z - Godhuman Z - Godhuman C - Godhuman X." },
+      { name: "Rocket", type: "Fruit Stats", sequence: "Sguitar Z - Godhuman C - Rocket C - SpikeyTrident Z - SpikeyTrident X - Rocket Z - Godhuman Z - Godhuman X." },
+      { name: "Blade", type: "Sword Stats", sequence: "Sguitar X - Sanguine C - Blade C - CDK Z - CDK X - Sanguine Z - Sanguine X." },
+      { name: "Ghost", type: "Fruit Stats", sequence: "Sguitar X - Ghost V - Ghost X - Ghost Z - Godhuman X - Godhuman C - SpikeTrident X - Ghost C - Godhuman Z." },
+      { name: "Love", type: "Fruit Stats", sequence: "Love C - Godhuman Z - Godhuman C - SoulCane Z - Love X - Love V - Godhuman X." },
+      { name: "Quake", type: "Fruit Stats", sequence: "GravityBlade Z - Quake V - Godhuman X - Godhuman Z - Godhuman C - Quake Z." },
+      { name: "Control", type: "Fruit Stats", sequence: "Control Z - Control X - SpikeyTrident X - Control C - Godhuman Z - Godhuman C - Control F - Godhuman X." },
+      { name: "AWK Light", type: "Fruit Stats", sequence: "Sguitar X - Sanguine C - Fox Lamp Z - Light V - Light Z - Sanguine Z - FoxLamp X - Light C - Light X - Light Z." },
+      { name: "AWK Magma", type: "Fruit Stats", sequence: "Gravity Blade Z - Magma C - Magma V - Godhuman X - Godhuman Z - Godhuman C - Magma X." },
+      { name: "Smoke", type: "Fruit Stats", sequence: "Sguitar X - Godhuman C - GravityBlade X - GravityBlade Z - Smoke Z - Smoke X - Godhuman Z - Godhuman X." },
+      { name: "Creation", type: "Fruit Stats", sequence: "Sguitar X - Gravity Z - Creation C - Creation X - Sanguine Z - Sanguine C - Creation Z - Creation V." },
+      { name: "Venom", type: "Fruit Stats", sequence: "Sguitar X - Venom C - GravityBlade Z - Venom Z - Venom X - Godhuman X - Godhuman Z - Godhuman C - Venom F." },
+      { name: "Trex", type: "Fruit Stats", sequence: "Trex X - trex C - Sanguine Z - Sanguine C - Yama X - Sanguine X - Trex Z." },
+      { name: "Rubber", type: "Fruit Stats", sequence: "Sguitar X - Godhuman C - Rubber F - SpikeyTrident X - Rubber C - Godhuman X - Godhuman Z - Rubber F - Rubber Z." },
+      { name: "Pain", type: "Fruit Stats", sequence: "Sguitar X - GravityBlade Z - Pain V - Pain C - Pain Z - SharkmanKarate X - SharkmanKarate C - SharkmanKarate Z." },
+      { name: "Blizzard", type: "Fruit Stats", sequence: "Sguitar X - Blizzard V - SpikeyTrident X - Blizzard X - Blizzard C - Blizzard Z - Godhuman X - Godhuman Z." },
+      { name: "Mammoth", type: "Fruit Stats", sequence: "Mammoth C - ElectricClaw C - ElectricClaw Z - SpikeyTrident Z - ElectricClaw X - Mammoth X." },
+      { name: "Tiger", type: "Fruit Stats", sequence: "Sguitar X - Tiger C - SharkmanKarate Z - SharkmanKarate C - CDK X - Tiger Z - Tiger X - Tiger F." },
+      { name: "Werewolf Tiger", type: "Fruit Stats", sequence: "ElectricClaw C - ElectricClaw Z - Yama X - WTiger Z - WTiger X - WTiger C." },
+      { name: "East Dragon", type: "Fruit Stats", sequence: "GravityBlade Z - EDragon M1x3 - Sanguine Z - Sanguine C - EDragon X - EDragon C - Sanguine X - EDragon Z." },
+      { name: "Pheonix", type: "Fruit Stats", sequence: "Sguitar X - Pheonix X - SpikeyTrident X - Godhuman Z - Godhuman X - Godhuman C." },
+      { name: "Lightning", type: "Fruit Stats", sequence: "Lightning X - Lightning C - Lightning C - Godhuman Z - Godhuman C - SharkAnchor X - Godhuman X - Lightning Z." },
+      { name: "AWK Spider", type: "Fruit Stats", sequence: "Spider X - Spider Z - SharkmanKarate X - SharkmanKarate Z - CDK X - Spider V - SharkmanKarate C - UNWK Spider C." },
+      { name: "Spirit", type: "Fruit Stats", sequence: "Sguitar X - Spirit C (jump after) - Spirit V (down) - Godhuman X - Godhuman Z - Godhuman C (look up) - Spirit X." },
+      { name: "Shadow", type: "Fruit Stats", sequence: "Shadow Z - Yama X - Shadow V - Shadow X - DragonTalon X - DragonTalon C." },
+      { name: "Gravity", type: "Fruit Stats", sequence: "Sguitar X - Gravity X - Godhuman Z - Godhuman C - SharkAnchor X - Gravity C - Gravity V - Godhuman X." },
+      { name: "AWK Dark", type: "Fruit Stats", sequence: "Sguitar X - SharkmanKarate C - CDK X - CDK Z - Dark X - Dark C - SharkmanKarate X - AcidiumRifle Z - Dark V - Dark Z." },
+      { name: "AWK Sand", type: "Fruit Stats", sequence: "Sguitar - DragonTrident X - Sand X - UNWK Sand C - Sand V - Godhuman X - Godhuman Z - Godhuman C - Sand Z." },
+      { name: "AWK Flame", type: "Fruit Stats", sequence: "ElectricClaw C - Flame C - CDK Z - Kabucha X - Flame V - ElectricClaw Z - Flame X." },
+      { name: "Spike", type: "Fruit Stats", sequence: "Godhuman C - SpikeyTrident X - Spike X - Spike C - Cyborg v3 - Godhuman Z - Kabucha X - Spike V - SpikeyTrident Z - Godhuman X." },
+      { name: "Spin", type: "Fruit Stats", sequence: "Sguitar X - Spin Z - Godhuman X - Godhuman Z - Godhuman C - SpikeyTrident X - Spin C - Spin X." }
+    ];
+
+    const list = document.getElementById("combo-list");
+    const filterInput = document.getElementById("combo-filter");
+    const comboCount = document.getElementById("combo-count");
+    const emptyState = document.getElementById("empty-state");
+    const modal = document.getElementById("combo-modal");
+    const modalTitle = document.getElementById("modal-title");
+    const modalType = document.getElementById("modal-type");
+    const modalSteps = document.getElementById("modal-steps");
+    const copyButton = document.getElementById("copy-combo");
+    const copyNote = document.getElementById("copy-note");
+    const randomComboButton = document.getElementById("random-combo");
+    const closeModalButton = document.getElementById("close-modal");
+
+    let activeCombo = null;
+
+    comboCount.textContent = combos.length;
+
+    function renderCombos(query = "") {
+      const needle = query.trim().toLowerCase();
+      const filtered = combos.filter((combo) => {
+        const haystack = `${combo.name} ${combo.type} ${combo.sequence}`.toLowerCase();
+        return haystack.includes(needle);
+      });
+
+      list.innerHTML = "";
+
+      filtered.forEach((combo) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "combo-item";
+        button.innerHTML = `
+          <span class="combo-top">
+            <span>
+              <h3 class="combo-name">${combo.name}</h3>
+            </span>
+            <span class="badge">${combo.type}</span>
+          </span>
+        `;
+        button.addEventListener("click", () => openCombo(combo));
+        list.appendChild(button);
+      });
+
+      emptyState.style.display = filtered.length ? "none" : "block";
+    }
+
+    function getSteps(sequence) {
+      return sequence
+        .replace(/\.$/, "")
+        .split(" - ")
+        .map((step) => step.trim())
+        .filter(Boolean);
+    }
+
+    function openCombo(combo) {
+      activeCombo = combo;
+      modalTitle.textContent = `${combo.name} Combo`;
+      modalType.textContent = combo.type;
+      modalSteps.innerHTML = "";
+      getSteps(combo.sequence).forEach((step) => {
+        const chip = document.createElement("span");
+        chip.className = "step-chip";
+        chip.textContent = step;
+        modalSteps.appendChild(chip);
+      });
+      copyNote.textContent = "";
+      modal.showModal();
+    }
+
+    async function copyCombo() {
+      if (!activeCombo) return;
+      const text = `${activeCombo.name} Combo\n${activeCombo.type}\n${activeCombo.sequence}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        copyNote.textContent = "Combo copied to clipboard.";
+      } catch (error) {
+        copyNote.textContent = "Clipboard access is unavailable here, but the combo is still visible.";
+      }
+    }
+
+    function openRandomCombo() {
+      const pick = combos[Math.floor(Math.random() * combos.length)];
+      openCombo(pick);
+    }
+
+    filterInput.addEventListener("input", (event) => renderCombos(event.target.value));
+    copyButton.addEventListener("click", copyCombo);
+    randomComboButton.addEventListener("click", openRandomCombo);
+    closeModalButton.addEventListener("click", () => modal.close());
+    modal.addEventListener("click", (event) => {
+      const bounds = modal.querySelector(".modal-shell").getBoundingClientRect();
+      const isInside =
+        event.clientX >= bounds.left &&
+        event.clientX <= bounds.right &&
+        event.clientY >= bounds.top &&
+        event.clientY <= bounds.bottom;
+
+      if (!isInside) {
+        modal.close();
+      }
+    });
+
+    renderCombos();
+  </script>
+</body>
+</html>
